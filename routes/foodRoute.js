@@ -36,4 +36,35 @@ router.post('/search', async (req, res) => {
   }
 });
 
+//Updates the food details
+router.post('/updateFoodDetails', async (req, res) => {
+  try {
+    const { foodId, name, price, status, threshold } = req.body;
+    const food = await Food.findOneAndUpdate(
+      { foodId: foodId },
+      { name, price, status, threshold },
+      { new: true }
+    );
+    res.json(food);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Server Error' });
+  }
+});
+
+//deletes the food where the parameter is foodId
+router.delete('/deleteFood/:foodId', async (req, res) => {
+  try {
+    const food = await Food.findOneAndDelete({ foodId: req.params.foodId });
+    if (!food) {
+      return res.status(404).json({ msg: 'Food not found' });
+    }
+    res.json({ msg: 'Food deleted' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Server Error' });
+  }
+});
+
+
 module.exports = router;
