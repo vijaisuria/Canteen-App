@@ -1,12 +1,12 @@
 // Import required modules
 const express = require('express');
 const mongoose = require('mongoose');
-const contractorsRouter = require('./routes/contractorRoute');
-const foodsRouter = require('./routes/foodRoute');
+const userSideApi = require('./routes/userSideApi');
+const contractorSideApi = require('./routes/contractorSideApi');
 
 // Create Express app
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 // Connect to MongoDB using Mongoose
 mongoose.connect('mongodb://127.0.0.1:27017/scanteen', { useNewUrlParser: true, useUnifiedTopology: true })
@@ -18,12 +18,12 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
 app.get('/', (req,res) => {
-  res.send('Helloworld')
+  res.send('HiWorld')
 });
 
 // Mount the routers for the APIs
-app.use('/api/contractors', contractorsRouter);
-app.use('/api/foods', foodsRouter);
+app.use('/api/v1/User', userSideApi);
+app.use('/api/v1/Contractors', contractorSideApi);
 
 // Start the server
-app.listen(PORT, () => console.log(`Server is running on http://localhost:3000`));
+app.listen(3000, () => console.log(`Server is running on http://localhost:5000`));
