@@ -1,0 +1,47 @@
+{
+  "contractId": "644bde695441e7755a742116",
+  "name": "Chicken Burger",
+  "price": 150,
+  "status": "available",
+  "threshold": 20
+}
+{
+  "contractId": "644bde695441e7755a742118",
+  "name": "Veg Burger",
+  "price": 100,
+  "status": "available",
+  "threshold": 25
+}
+{
+  "contractId": "644bde695441e7755a742118",
+  "name": "Margherita Pizza",
+  "price": 200,
+  "status": "available",
+  "threshold": 10
+} 
+{
+  "contractId": "644bde695441e7755a742117",
+  "name": "Pepperoni Pizza",
+  "price": 250,
+  "status": "available",
+  "threshold": 10
+} 
+{
+  "contractId": "644bde695441e7755a74211a",
+  "name": "Paneer Tikka Masala",
+  "price": 220,
+  "status": "available",
+  "threshold": 5
+}
+{
+  "contractId": "644bde695441e7755a74211a",
+  "name": "Butter Chicken",
+  "price": 250,
+  "status": "available",
+  "threshold": 8
+}
+
+  
+  
+  
+  
