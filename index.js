@@ -17,13 +17,10 @@ mongoose.connect('mongodb://127.0.0.1:27017/scanteen', { useNewUrlParser: true, 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
-app.get('/', (req,res) => {
-  res.send('HiWorld')
-});
 
 // Mount the routers for the APIs
 app.use('/api/v1/User', userSideApi);
 app.use('/api/v1/Contractors', contractorSideApi);
 
 // Start the server
-app.listen(3000, () => console.log(`Server is running on http://localhost:5000`));
+app.listen(PORT, () => console.log(`Server is running on http://localhost:5000`));
