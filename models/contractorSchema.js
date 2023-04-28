@@ -3,11 +3,7 @@ const mongoose = require('mongoose');
 // Create Contractor schema
 const contractorSchema = new mongoose.Schema({
   orgId: {
-    type: String,
-    required: true
-  },
-  contractorId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     required: true
   },
   contractorName: {

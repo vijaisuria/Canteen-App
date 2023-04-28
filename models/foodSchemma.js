@@ -3,11 +3,7 @@ const mongoose = require('mongoose');
 // Create Food schema
 const foodSchema = new mongoose.Schema({
   contractId: {
-    type: String,
-    required: true
-  },
-  foodId: {
-    type: String,
+    type: mongoose.Schema.ObjectId,
     required: true
   },
   name: {
