@@ -24,16 +24,77 @@ const authenticateToken =  (req, res, next) => {
             if (err) {
               return res.status(403).json({ message: 'Token expired' });
             }
-            req.userId = decoded.userId;
+            req.contractorId = decoded.contractorId;
               //Check if user exists in database
-              const user = await User.findById({_id: req.userId});
-              if (!user) 
-                return res.status(403).json({ message: 'User Not Found' });
+              const contractor = await Contractor.findById({_id: req.contractorId});
+              if (!contractor) 
+                return res.status(403).json({ message: 'Contractor Not Found' });
             next();
           });
     }
     
   };
+
+  // CONTRACTOR SIGNUP
+router.post('/signUp',async function(req,res){
+  const newlogin = new Contractor({
+    orgId: new mongoose.Types.ObjectId(req.body.orgId),
+    contractorName : req.body.contractorName ,
+    contractorCode: req.body.contractorCode, 
+    contractorPhoneNumber: req.body.contractorPhoneNumber,
+    contractorPassword: req.body.contractorPassword, 
+    contractorDescription: req.body.contractorDescription,
+    contractorUPI: req.body.contractorUPI, 
+    status: req.body.status
+  });
+  const existlogin= await Contractor.findOne({contractorPhoneNumber: newlogin.contractorPhoneNumber, contractorCode: newlogin.contractorCode});
+  if(existlogin){
+      res.json('Already Contractor exists');
+  }
+  else{
+      const org= await Organisation.findOne({_id: newlogin.orgId});
+      if(org!=null){
+        await newlogin.save();   
+        const responseData = {
+          contractorName: newlogin.contractorName,
+          contractorPhoneNumber: newlogin.contractorPhoneNumber,
+          orgId: newlogin.orgId,
+          orgIp: org.orgIp,
+          token: jwt.sign({ userId: newlogin._id }, process.env.JWT_SECRET),
+        };
+        res.json(responseData);
+      }
+      else{
+        res.json('Invalid orgId');
+      }
+  }
+});
+
+//CONTRACTOR LOGIN
+router.post('/login',async function(req,res){
+  const { contractorCode, contractorPhoneNumber, contractorPassword } = req.body;
+  const exist= await Contractor.findOne({contractorPhoneNumber: contractorPhoneNumber, contractorCode: contractorCode});
+  console.log(exist);
+  if(exist!=null ){
+      if(contractorPassword==exist.contractorPassword){
+          const org= await Organisation.findOne({_id: exist.orgId});
+          const responseData = {
+              contractorName: exist.contractorName,
+              phoneNumber: exist.contractorPhoneNumber,
+              orgId: exist.orgId,
+              orgIp: org.orgIp,
+              token: jwt.sign({ contractorId: exist._id }, process.env.JWT_SECRET),
+        };
+        res.json(responseData);
+      }
+      else{
+          return res.status(401).json({ message: 'password mismatch' });
+      }
+  } 
+  else{
+      return res.status(401).json({ message: 'Contractor not exist' });
+  }
+});
 
 // Get all food items for a given contractorId
 router.get('/getAllfood/:contractorId',authenticateToken, async (req, res) => {

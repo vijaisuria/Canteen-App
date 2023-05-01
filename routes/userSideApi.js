@@ -96,14 +96,16 @@ router.post('/login',async function(req,res){
 });
 
 router.post('/update',authenticateToken,async function(req,res){
-    const newupdate = new User({
+    const newupdate = {
         Name: req.body.Name,
         phoneNumber: req.body.phoneNumber,
         password: req.body.password,
         orgId: new mongoose.Types.ObjectId(req.body.orgId)
-    });
-    const org= await Organisation.findOne({_id: newupdate.orgId});
+    };
+
     
+    const org= await Organisation.findOne({_id: newupdate.orgId});
+
     if(org!=null){
       await User.findByIdAndUpdate(req.userId, {Name:newupdate.Name,phoneNumber: newupdate.phoneNumber,password:newupdate.password,orgId:newupdate.orgId});
     const responseData = {
