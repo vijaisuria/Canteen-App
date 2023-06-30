@@ -1,0 +1,19 @@
+POST http://localhost:5000/api/v1/Contractors/forgotPassword
+Content-Type: application/json
+
+{
+    "email": "vijaisuria04@gmail.com"
+}
+
+
+###
+
+POST http://localhost:5000/api/v1/Contractors/resetPassword
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb250cmFjdG9ySWQiOiI2NDRiZGU2OTU0NDFlNzc1NWE3NDIxMTYiLCJpYXQiOjE2ODgxMjkyNzB9.hN7WnTmhfOksR3hwrDUZT8Tesk2fHBqWpmH2K-gGLhU
+Content-Type: application/json
+
+{
+    "email": "vijaisuria04@gmail.com",
+    "otp": "250376",
+    "newPassword": "909090"
+}
