@@ -11,6 +11,15 @@ const contractorSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  contractorEmail: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+  resetPasswordOTP: {
+    type: String,
+    default: "1",
+  },
   contractorCode: {
     type: String,
     required: true,

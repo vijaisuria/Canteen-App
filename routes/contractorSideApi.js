@@ -10,6 +10,8 @@ const {
   signUpContractor,
   loginContractors,
   addFoodByContractorId,
+  forgotPasswordContractor,
+  resetPasswordOTP,
 } = require("../controller/contractorSide");
 
 // JWT AUTHENTICATOR FOR CONTRACTOR
@@ -47,5 +49,11 @@ router.delete(
   authenticateTokenContractor,
   deleteFoodById
 );
+
+// forgot password for contractor (OTP generation)
+router.post("/forgotPassword", forgotPasswordContractor);
+
+// reset password for contractor (OTP validation)
+router.post("/resetPassword", authenticateTokenContractor, resetPasswordOTP);
 
 module.exports = router;

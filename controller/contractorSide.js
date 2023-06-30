@@ -4,6 +4,8 @@ const { User } = require("../models/userSchemma");
 const { Organisation } = require("../models/organisationSchemma");
 const { Food } = require("../models/foodSchemma");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+require("dotenv").config();
 // @desc    Fetch all Food from the contractor
 // @route   POST /api/products
 // @access  Public
@@ -176,6 +178,7 @@ const updateFoodDetails = async (req, res) => {
     res.status(500).json({ msg: "Server Error" });
   }
 };
+
 // @desc    Delete Food by Id from the contractor
 // @route   GET /api/products
 // @access  Private
@@ -194,6 +197,159 @@ const deleteFoodById = async (req, res) => {
   }
 };
 
+//generate OTP
+function generateOTP() {
+  const digits = "0123456789";
+  let OTP = "";
+  for (let i = 0; i < 6; i++) {
+    OTP += digits[Math.floor(Math.random() * 10)];
+  }
+  return OTP;
+}
+
+// Send email with OTP in HTML format
+async function sendOTPByEmail(email, otp) {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_ADDRESS,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_ADDRESS,
+      to: email,
+      subject: "Password Reset OTP",
+      html: `
+        <html>
+          <head>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+              }
+              .container {
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #f2f2f2;
+              }
+              .header {
+                text-align: center;
+                margin-bottom: 20px;
+              }
+              .company-name {
+                font-size: 24px;
+                font-weight: bold;
+              }
+              .company-address {
+                font-style: italic;
+              }
+              .content {
+                margin-bottom: 20px;
+              }
+              .otp {
+                font-weight: bold;
+                font-size: 20px;
+              }
+              .contact-details {
+                font-style: italic;
+                text-align: center;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <div class="company-name">S-Canteen</div>
+                <div class="company-address">MIT, Anna University, Chennai 600044.</div>
+              </div>
+              <div class="content">
+                <p>Dear Contractor,</p>
+                <p>We have received a request to reset your password. Please use the following OTP to proceed:</p>
+                <p class="otp">${otp}</p>
+              </div>
+              <div class="contact-details">
+                If you need any assistance, please contact us at scanteem@mitindia.edu or call us at 044-456-7890.
+              </div>
+            </div>
+          </body>
+        </html>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Error sending email", error);
+    throw error;
+  }
+}
+
+// @desc    Forgot password contractor
+// @route   POST /api/v1/Contractors/forgotPassword
+// @access  Public
+const forgotPasswordContractor = async function (req, res) {
+  const { email } = req.body;
+
+  try {
+    const contractor = await Contractor.findOne({ contractorEmail: email });
+    if (!contractor) {
+      return res.status(404).json({ message: "Contractor not found" });
+    }
+
+    const otp = generateOTP();
+
+    // Update the user document in the database with the new OTP
+    await Contractor.findOneAndUpdate(
+      { contractorEmail: email },
+      { resetPasswordOTP: otp }
+    )
+      .then(() => console.log("OTP updated"))
+      .catch((err) => console.log("otp failure \n" + err));
+
+    console.log(otp);
+    console.log(contractor.resetPasswordOTP);
+
+    await sendOTPByEmail(email, otp);
+
+    res.json({
+      message: "OTP sent successfully",
+      token: jwt.sign({ contractorId: contractor._id }, process.env.JWT_SECRET),
+    });
+  } catch (error) {
+    console.error("Error sending OTP", error);
+    res.status(500).json({ message: "Failed to send OTP" });
+  }
+};
+
+// @desc    Reset password contractor
+// @route   POST /api/v1/Contractors/resetPassword
+// @access  Private
+const resetPasswordOTP = async function (req, res) {
+  const { email, otp, newPassword } = req.body;
+
+  try {
+    const contractor = await Contractor.findOne({ contractorEmail: email });
+    if (!contractor) {
+      return res.status(404).json({ message: "Contractor not found" });
+    }
+
+    if (otp !== contractor.resetPasswordOTP) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+
+    contractor.contractorPassword = newPassword;
+    contractor.resetPasswordOTP = undefined; // Clear the OTP
+    await contractor.save();
+
+    res.json({ message: "Password reset successful" });
+  } catch (error) {
+    console.error("Error resetting password", error);
+    res.status(500).json({ message: "Failed to reset password" });
+  }
+};
+
 module.exports = {
   signUpContractor,
   loginContractors,
@@ -202,4 +358,6 @@ module.exports = {
   deleteFoodById,
   searchFood,
   addFoodByContractorId,
+  forgotPasswordContractor,
+  resetPasswordOTP,
 };
