@@ -47,6 +47,7 @@ const signUpContractor = async function (req, res) {
     contractorPassword: req.body.contractorPassword,
     contractorDescription: req.body.contractorDescription,
     contractorUPI: req.body.contractorUPI,
+    contractorEmail: req.body.contractorEmail,
     status: req.body.status,
   });
   const existlogin = await Contractor.findOne({
