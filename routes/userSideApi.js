@@ -16,7 +16,7 @@ const { authenticateTokenUser } = require("../middleware/jwtAuth");
 // USER SIGNUP
 router.post("/signUp", signUpUser);
 
-//USER LOGIN
+// USER LOGIN
 router.post("/login", loginUser);
 
 //Update userDetails
