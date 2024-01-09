@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const foodSchema = new mongoose.Schema({
   contractId: {
     type: mongoose.Schema.ObjectId,
+    ref:"Contractor",
     required: true
   },
   name: {
